@@ -1,65 +1,25 @@
 package com.stackroute.foodieservice.domain;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
-
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 @Entity
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Restaurant {
     @Id
     private int id;
+    @NotNull(message = "Write the message in string" )
+    @Size(min = 2)
     private String restaurantName;
     private String imageUrl;
     private String resAddress;
 
-    public Restaurant() {
-    }
-
-    public Restaurant(int id, String restaurantName, String imageUrl, String resAddress) {
-        this.id = id;
-        this.restaurantName = restaurantName;
-        this.imageUrl = imageUrl;
-        this.resAddress= resAddress;
-    }
-
-    @Override
-    public String toString() {
-        return "Restaurant{" +
-                "id=" + id +
-                ", restaurantName='" + restaurantName + '\'' +
-                ", imageUrl='" + imageUrl + '\'' +
-                ", ResAddress='" + resAddress + '\'' +
-                '}';
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getRestaurantName() {
-        return restaurantName;
-    }
-
-    public void setRestaurantName(String restaurantName) {
-        this.restaurantName = restaurantName;
-    }
-
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
-
-    public String getResAddress() {
-        return resAddress;
-    }
-
-    public void setResAddress(String resAddress) {
-        this.resAddress = resAddress;
-    }
 }

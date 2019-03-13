@@ -1,6 +1,8 @@
 package com.stackroute.foodieservice.controller;
 
 import com.stackroute.foodieservice.domain.Restaurant;
+import com.stackroute.foodieservice.exceptions.RestaurantAlreadyExists;
+import com.stackroute.foodieservice.exceptions.RestaurantNotFound;
 import com.stackroute.foodieservice.service.RestaurantService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpRequest;
@@ -21,8 +23,18 @@ public class RestaurantController {
 
     @PostMapping("restaurant")
     public ResponseEntity<Restaurant> save(@RequestBody Restaurant restaurant){
-        Restaurant result=restaurantService.save(restaurant);
-        return new ResponseEntity<Restaurant>(result,HttpStatus.OK);
+        ResponseEntity responseEntity;
+        try {
+            Restaurant result = restaurantService.save(restaurant);
+            responseEntity=new ResponseEntity<Restaurant>(result,HttpStatus.CREATED);
+        }
+        catch(RestaurantAlreadyExists ex){
+            System.out.println("*********" + ex);
+            responseEntity= new ResponseEntity<String>(ex.getMessage(),HttpStatus.CONFLICT);
+            ex.printStackTrace();
+        }
+        return responseEntity;
+
 
     }
     @DeleteMapping("restaurants")
@@ -36,12 +48,26 @@ public class RestaurantController {
     }
     @GetMapping("restaurant/{id}")
     public ResponseEntity<Restaurant> getById(@PathVariable("id") int id){
-        Restaurant restaurant=restaurantService.getById(id);
-        return new ResponseEntity<Restaurant>(restaurant,HttpStatus.OK);
+        ResponseEntity responseEntity;
+        try {
+            Restaurant restaurant = restaurantService.getById(id);
+            responseEntity=new ResponseEntity<Restaurant>(restaurant,HttpStatus.FOUND);
+        }
+        catch(RestaurantNotFound ex){
+            responseEntity=new ResponseEntity<String>(ex.getMessage(),HttpStatus.CONFLICT);
+
+        }
+       return  responseEntity;
     }
     @PutMapping("restaurant/{id}")
     public ResponseEntity<Restaurant> update(@RequestBody Restaurant restaurant,@PathVariable("id") int id){
         Restaurant restaurant1=restaurantService.updateRestaurant(restaurant,id);
         return new ResponseEntity<Restaurant>(restaurant1,HttpStatus.OK);
+    }
+    @GetMapping("restaurants/{name}")
+    public ResponseEntity<Restaurant> find(@PathVariable("name") String name){
+        Restaurant restaurant=restaurantService.findByName(name);
+        return new ResponseEntity<Restaurant>(restaurant,HttpStatus.FOUND);
+
     }
 }

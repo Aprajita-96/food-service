@@ -1,11 +1,14 @@
 package com.stackroute.foodieservice.service;
 
 import com.stackroute.foodieservice.domain.Restaurant;
+import com.stackroute.foodieservice.exceptions.RestaurantAlreadyExists;
+import com.stackroute.foodieservice.exceptions.RestaurantNotFound;
 import com.stackroute.foodieservice.repository.UserRepository;
 import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,8 +20,14 @@ public class RestaurantService {
         this.userRepository = userRepository;
     }
 
-    public Restaurant save(Restaurant restaurant){
+    public Restaurant save(Restaurant restaurant) throws RestaurantAlreadyExists {
+        if(userRepository.existsById(restaurant.getId())){
+           throw new RestaurantAlreadyExists("user already exists");
+        }
         Restaurant resultant=userRepository.save(restaurant);
+        if(resultant==null){
+            throw new RestaurantAlreadyExists("user already exists");
+        }
         return resultant;
     }
     public void delete(Restaurant restaurant){
@@ -28,8 +37,14 @@ public class RestaurantService {
         List<Restaurant> resultant=(List<Restaurant>)userRepository.findAll();
         return resultant;
     }
-    public Restaurant getById(int id){
-        Optional<Restaurant> result=userRepository.findById(id);
+    public Restaurant getById(int id) throws RestaurantNotFound{
+        Optional<Restaurant> result;
+        if(userRepository.existsById(id)) {
+            result = userRepository.findById(id);
+        }
+        else{
+            throw new RestaurantNotFound("not found");
+        }
          return result.get();
     }
     public Restaurant updateRestaurant(Restaurant restaurant,int id){
@@ -40,4 +55,24 @@ public class RestaurantService {
         fetchedRestaurant.setRestaurantName(restaurant.getRestaurantName());
         return userRepository.save(fetchedRestaurant);
     }
+    public Restaurant findByName(String name) {
+//        Restaurant result=new Restaurant();
+//        List<Restaurant> list=(List<Restaurant>)userRepository.findAll();
+//        for(Restaurant restaurant:list){
+//            System.out.println(restaurant.getRestaurantName());
+//            System.out.println(name);
+//             if((restaurant.getRestaurantName()).equals(name)){
+//                 result.setRestaurantName(restaurant.getRestaurantName());
+//                 result.setResAddress(restaurant.getResAddress());
+//                 result.setId(restaurant.getId());
+//
+//             }
+//         }
+//      return result;
+//    }
+        Restaurant restaurant = userRepository.findByName(name);
+        return restaurant;
+    }
+
+
 }
